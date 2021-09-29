@@ -19,29 +19,26 @@ function App() {
     setGameBoard(board);
 
     // Testing sudoku generator
-    let dummy = sudoku.initializeEmptyBoard();
+    let successfulSolutions = 0;
+    let unsuccessfuleSolutions = 0;
+    const sols: Array<number[][]> = [];
 
-    try {
-      // dummy = sudoku.generateSudokuSolution();
-
-      // dummy = sudoku.fillTriplets(dummy, 3, 0);
-      // dummy = sudoku.fillTriplets(dummy, 3, 1);
-      // dummy = sudoku.fillTriplets(dummy, 3, 2);
-
-      dummy = sudoku.fillNumberInBoard(dummy, 1);
-      dummy = sudoku.fillNumberInBoard(dummy, 2);
-      dummy = sudoku.fillNumberInBoard(dummy, 3);
-      dummy = sudoku.fillNumberInBoard(dummy, 4);
-      dummy = sudoku.fillNumberInBoard(dummy, 5);
-      dummy = sudoku.fillNumberInBoard(dummy, 6);
-      dummy = sudoku.fillNumberInBoard(dummy, 7);
-      dummy = sudoku.fillNumberInBoard(dummy, 8);
-      dummy = sudoku.fillNumberInBoard(dummy, 9);
-    } catch (err: any) {
-      console.log(err.message);
+    for (let i = 0; i < 1000; i++) {
+      try {
+        let dummy = sudoku.generateSudokuSolution();
+        successfulSolutions += 1;
+        sols.push(dummy);
+  
+      } catch (err: any) {
+        unsuccessfuleSolutions += 1;
+        // console.log(err.message);
+      }
     }
 
-    console.log(dummy);
+
+    console.log('successful', successfulSolutions);
+    console.log('unsuccessful', unsuccessfuleSolutions);
+    console.log(sols);
   }, []);
 
   return (
