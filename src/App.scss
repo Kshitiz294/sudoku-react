@@ -1,6 +1,32 @@
 .App {
   text-align: center;
   min-height: 100vh;
+
+  .horizontal-row {
+    border-bottom: 1px solid #ddd;
+  }
+
+  .horizontal-row:nth-child(1) {
+    border-top: 1px solid;
+  }
+
+  .horizontal-row:nth-child(3n) {
+    border-bottom: 1px solid #000;
+  }
+}
+
+.horizontal-row {
+  .cube {
+    border-right: 1px solid #ddd;
+  }
+
+  .cube:nth-child(1) {
+    border-left: 1px solid;
+  }
+
+  .cube:nth-child(3n) {
+    border-right: 1px solid #000;
+  }
 }
 
 .flex-container-column {
@@ -18,5 +44,5 @@
 .cube {
   width: 30px;
   height: 30px;
-  border: 1px solid;
+  // border: 1px solid;
 }

@@ -51,7 +51,7 @@ function App() {
       {
         gameBoard.map((row: Cube[], i: number) => {
           return (
-            <div key={i} className="flex-container-row">
+            <div key={i} className="flex-container-row horizontal-row">
               {
                 row.map((cube: Cube, j: number) => {
                   return <div key={j} className="cube flex-container-column">{cube.readonly ? cube.reality : ''}</div>
