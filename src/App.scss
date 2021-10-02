@@ -3,11 +3,11 @@
   min-height: 100vh;
 
   .horizontal-row {
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #999;
   }
 
   .horizontal-row:nth-child(1) {
-    border-top: 1px solid;
+    border-top: 1px solid #000;
   }
 
   .horizontal-row:nth-child(3n) {
@@ -17,11 +17,11 @@
 
 .horizontal-row {
   .cube {
-    border-right: 1px solid #ddd;
+    border-right: 1px solid #999;
   }
 
   .cube:nth-child(1) {
-    border-left: 1px solid;
+    border-left: 1px solid #000;
   }
 
   .cube:nth-child(3n) {
@@ -45,4 +45,24 @@
   width: 30px;
   height: 30px;
   cursor: pointer;
+}
+
+.selected-cube {
+  background: rgb(161, 208, 247);
+}
+
+.affected-cube {
+  background: #eee;
+}
+
+.same-cube {
+  background: #ccc;
+}
+
+.correct-answer {
+  color: rgb(9, 117, 241)
+}
+
+.wrong-answer {
+  color: rgb(207, 43, 43)
 }

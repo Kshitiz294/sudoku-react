@@ -5,8 +5,20 @@ import { Cube } from './models/cube';
 
 function App() {
   const [gameBoard, setGameBoard] = useState<Array<Cube[]>>([]);
-  const [selectedCube, setSelectedCube] = useState<Cube | undefined>(undefined);
+  const [selectedrowIndex, setSelectedRowIndex] = useState<number | undefined>(undefined);
+  const [selectedcolumnIndex, setSelectedColumnIndex] = useState<number | undefined>(undefined);
+  const [disableButtons, setDisableButtons] = useState<boolean>(true);
   const numberButtons = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+  useEffect(() => {
+    if (selectedrowIndex === undefined || selectedcolumnIndex === undefined) {
+      setDisableButtons(true);
+    } else if (gameBoard[selectedrowIndex][selectedcolumnIndex].readonly) {
+      setDisableButtons(true);
+    } else {
+      setDisableButtons(false);
+    }
+  }, [selectedrowIndex, selectedcolumnIndex, gameBoard])
 
   useEffect(() => {
     let solution: number[][];
@@ -45,16 +57,62 @@ function App() {
     
   }, []);
 
-  const selectCube = (rowIndex: number, columnIndex: number) => {
-    setSelectedCube(gameBoard[rowIndex][columnIndex].readonly ? undefined : gameBoard[rowIndex][columnIndex]);
+  const selectCube = (rowIndex: number, columnIndex: number): void => {
+    setSelectedRowIndex(rowIndex);
+    setSelectedColumnIndex(columnIndex);
   }
 
-  const setNumberInCube = (n: number) => {
-    if (selectedCube) {
-      selectedCube.value = n;
-      const board = [...gameBoard];
-      setGameBoard(board);
+  const setNumberInCube = (n: number): void => {
+    if (selectedrowIndex !== undefined && selectedcolumnIndex !== undefined) {
+      if (!gameBoard[selectedrowIndex][selectedcolumnIndex].readonly) {
+        gameBoard[selectedrowIndex][selectedcolumnIndex].value = n;
+        const board = [...gameBoard];
+        setGameBoard(board);
+      }
     }
+  }
+
+  const isAffectedCube = (rowIndex: number, columnIndex: number): boolean => {
+    if (selectedrowIndex === undefined || selectedcolumnIndex === undefined) {
+      return false;
+    }
+
+    if (rowIndex === selectedrowIndex || columnIndex === selectedcolumnIndex) {
+      return true;
+    }
+
+    if (Math.floor(rowIndex / 3) === Math.floor(selectedrowIndex / 3) && Math.floor(columnIndex / 3) === Math.floor(selectedcolumnIndex / 3)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  const getClasses = (rowIndex: number, columnIndex: number): string => {
+    const classes = ['cube', 'flex-container-column'];
+
+    if (rowIndex === selectedrowIndex && columnIndex === selectedcolumnIndex) {
+      classes.push('selected-cube');
+    } else if (isAffectedCube(rowIndex, columnIndex)) {
+      classes.push('affected-cube');
+    } else {
+      if (selectedrowIndex !== undefined && selectedcolumnIndex !== undefined && gameBoard[selectedrowIndex][selectedcolumnIndex].value !== undefined) {
+        if (gameBoard[rowIndex][columnIndex].value === gameBoard[selectedrowIndex][selectedcolumnIndex].value) {
+          classes.push('same-cube');
+        }
+      }
+    }
+
+
+    if (!gameBoard[rowIndex][columnIndex].readonly && gameBoard[rowIndex][columnIndex].value) {
+      if (gameBoard[rowIndex][columnIndex].value === gameBoard[rowIndex][columnIndex].reality) {
+        classes.push('correct-answer');
+      } else {
+        classes.push('wrong-answer');
+      }
+    }
+
+    return classes.join(' ');
   }
 
   return (
@@ -67,7 +125,10 @@ function App() {
             <div key={i} className="flex-container-row horizontal-row">
               {
                 row.map((cube: Cube, j: number) => {
-                  return <div key={j} className="cube flex-container-column" onClick={() => selectCube(i, j)}>{cube.readonly ? cube.reality : cube.value}</div>
+                  const classes = getClasses(i, j);
+                  return (
+                    <div key={j} className={classes} onClick={() => selectCube(i, j)}>{cube.readonly ? cube.reality : cube.value}</div>
+                  );
                 })
               }
             </div>
@@ -79,7 +140,7 @@ function App() {
       <div className="flex-container-row" style={{marginTop: '20px', width: '288px', justifyContent: 'space-between'}}>
         {
           numberButtons.map((num: number, index: number) => {
-            return <button key={index} disabled={selectedCube === undefined} onClick={() => setNumberInCube(num)}>{num}</button>
+            return <button key={index} disabled={disableButtons} onClick={() => setNumberInCube(num)}>{num}</button>
           })
         }
       </div>
