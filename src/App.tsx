@@ -2,13 +2,31 @@ import React, { useEffect, useState } from 'react';
 import './App.scss';
 import * as sudoku from './generator';
 import { Cube } from './models/cube';
+import { NumberButton } from './models/number-button';
 
 function App() {
   const [gameBoard, setGameBoard] = useState<Array<Cube[]>>([]);
   const [selectedrowIndex, setSelectedRowIndex] = useState<number | undefined>(undefined);
   const [selectedcolumnIndex, setSelectedColumnIndex] = useState<number | undefined>(undefined);
   const [disableButtons, setDisableButtons] = useState<boolean>(true);
-  const numberButtons = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  const [numberButtons, setNumberButtons] = useState<Array<NumberButton>>([]);
+
+  useEffect(() => {
+    const buttons: NumberButton[] = [];
+    for (let i = 1; i < 10; i++) {
+      buttons.push({ value: i, occurance: 0 });
+    }
+
+    gameBoard.forEach((row: Cube[]) => {
+      row.forEach((c: Cube) => {
+        if (c.value && c.value === c.reality) {
+          buttons[c.value - 1].occurance += 1;
+        }
+      });
+    });
+    console.log(buttons);
+    setNumberButtons(buttons);
+  }, [gameBoard]);
 
   useEffect(() => {
     if (selectedrowIndex === undefined || selectedcolumnIndex === undefined) {
@@ -139,8 +157,12 @@ function App() {
       {/* Buttons */} 
       <div className="flex-container-row" style={{marginTop: '20px', width: '288px', justifyContent: 'space-between'}}>
         {
-          numberButtons.map((num: number, index: number) => {
-            return <button key={index} disabled={disableButtons} onClick={() => setNumberInCube(num)}>{num}</button>
+          numberButtons.map((num: NumberButton, index: number) => {
+            let styles = {};
+            if (num.occurance === 9) {
+              styles = { visibility: 'hidden' };
+            }
+            return <button key={index} style={styles} disabled={disableButtons} onClick={() => setNumberInCube(num.value)}>{num.value}</button>
           })
         }
       </div>
