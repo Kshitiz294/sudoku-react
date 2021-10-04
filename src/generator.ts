@@ -1,7 +1,47 @@
+import { Cube } from "./models/cube";
+
 let board: number[][] = [];
 let filledPlaces = 0;
 
-export function generateSudokuSolution(): number[][] {
+// Function to get Sudoku board
+export function createSudoku(): Cube[][] {
+    let solution: number[][];
+    // Iteratively generate a sudoku solution
+    while (true) {
+      try {
+        solution = generateSudokuSolution();
+        break;
+  
+      } catch (err: any) {
+        // Nothing required
+      }
+    }
+
+    // We have a solution, let's add it to the board
+    const board: Cube[][] = solution.map((row: number[]) => {
+      return row.map((n: number) => {
+        return { reality: n, readonly: false };
+      });
+    });
+
+    // let's show a few numbers (30 to be precise)
+    let count = 0;
+    while (count <= 30) {
+      const rowIndex = Math.floor(Math.random() * 8);
+      const columnIndex = Math.floor(Math.random() * 8);
+
+      if(!board[rowIndex][columnIndex].readonly) {
+        board[rowIndex][columnIndex].readonly = true;
+        board[rowIndex][columnIndex].value = board[rowIndex][columnIndex].reality;
+        count += 1;
+      }
+    }
+
+    return board;
+}
+
+// Function to generate sudoku solution
+function generateSudokuSolution(): number[][] {
     filledPlaces = 0;
     board = initializeEmptyBoard();
     for (let i = 0; i < 9; i += 3) {
@@ -27,6 +67,7 @@ export function generateSudokuSolution(): number[][] {
     }
 }
 
+// Function to shuffle options array
 function shuffleOptions(options: number[]): number[] {
     for (let i = 0; i < 10; i++) {
         let r1 = Math.floor(Math.random() * (options.length - 1));
@@ -38,6 +79,8 @@ function shuffleOptions(options: number[]): number[] {
     return options;
 }
 
+
+// Funtion to get Random Nuber from Array
 function generateRandomNumberFromNumbersArray(numbers: number[]): number {
     let randomIndex = Math.floor(Math.random() * (numbers.length - 1));
 
@@ -46,6 +89,7 @@ function generateRandomNumberFromNumbersArray(numbers: number[]): number {
     return randomNumber;
 }
 
+// Fill Diagonal(Independent) squares
 function fillDiagonalSquare(rowIndex: number, columnIndex: number): void {
     const h = getTriplet(rowIndex);
     const v = getTriplet(columnIndex);
@@ -64,6 +108,7 @@ function fillDiagonalSquare(rowIndex: number, columnIndex: number): void {
     filledPlaces += 9;
 }
 
+// Function to Fill Dependent Squares
 function canWeFillSquare(rowIndex: number, columnIndex: number, options: number[]): boolean {
     for (const o of options) {
         if (canWeFillNumberHere(o, rowIndex, columnIndex)) {
@@ -101,20 +146,13 @@ function canWeFillSquare(rowIndex: number, columnIndex: number, options: number[
     return false;
 }
 
-// function getAvailableOptions(rowIndex: number, columnIndex: number, options: number[]): number[] {
-//     const arr: number[] = [];
-//     board.forEach((row: number[]) => arr.push(row[columnIndex]));
-//     board[rowIndex].forEach((n: number) => arr.push(n));
-
-//     return options.filter((o: number) => !arr.some((n: number) => o === n));
-// }
-
-
+// Get current square
 function getTriplet(index: number): number[] {
     const quotient = Math.floor(index / 3);
     return [quotient * 3, quotient * 3 + 1, quotient * 3 + 2]
 }
 
+// Check if we can fill a number in this square
 function canWeFillNumberHere(num: number, rowIndex: number, colIndex: number): boolean {
     if (board.find((row: number[]) => row[colIndex] === num)) {
         return false;
@@ -127,7 +165,8 @@ function canWeFillNumberHere(num: number, rowIndex: number, colIndex: number): b
     return true;
 }
 
-export function initializeEmptyBoard(): number[][] {
+// initialize empty number[][]
+function initializeEmptyBoard(): number[][] {
     const board: Array<number[]> = [];
     for(let i = 0; i < 9; i++) {
       let row: number[] = [];

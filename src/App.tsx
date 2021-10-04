@@ -11,6 +11,12 @@ function App() {
   const [disableButtons, setDisableButtons] = useState<boolean>(true);
   const [numberButtons, setNumberButtons] = useState<Array<NumberButton>>([]);
 
+  // To Initialize the game
+  useEffect(() => {
+    setGameBoard(sudoku.createSudoku()); 
+  }, []);
+
+  // Initialize Number Buttons
   useEffect(() => {
     const buttons: NumberButton[] = [];
     for (let i = 1; i < 10; i++) {
@@ -27,6 +33,7 @@ function App() {
     setNumberButtons(buttons);
   }, [gameBoard]);
 
+  // Disable/Enable Number buttons
   useEffect(() => {
     if (selectedrowIndex === undefined || selectedcolumnIndex === undefined) {
       setDisableButtons(true);
@@ -37,48 +44,13 @@ function App() {
     }
   }, [selectedrowIndex, selectedcolumnIndex, gameBoard])
 
-  useEffect(() => {
-    let solution: number[][];
-    // Iteratively generate a sudoku solution
-    while (true) {
-      try {
-        solution = sudoku.generateSudokuSolution();
-        break;
-  
-      } catch (err: any) {
-        // Nothing required
-      }
-    }
-
-    // We have a solution, let's add it to the board
-    const board: Cube[][] = solution.map((row: number[]) => {
-      return row.map((n: number) => {
-        return { reality: n, readonly: false };
-      });
-    });
-
-    // let's show a few numbers (30 to be precise)
-    let count = 0;
-    while (count <= 30) {
-      const rowIndex = Math.floor(Math.random() * 8);
-      const columnIndex = Math.floor(Math.random() * 8);
-
-      if(!board[rowIndex][columnIndex].readonly) {
-        board[rowIndex][columnIndex].readonly = true;
-        board[rowIndex][columnIndex].value = board[rowIndex][columnIndex].reality;
-        count += 1;
-      }
-    }
-
-    setGameBoard(board);
-    
-  }, []);
-
+  // Select a cube
   const selectCube = (rowIndex: number, columnIndex: number): void => {
     setSelectedRowIndex(rowIndex);
     setSelectedColumnIndex(columnIndex);
   }
 
+  // Set a number in cube
   const setNumberInCube = (n: number): void => {
     if (selectedrowIndex !== undefined && selectedcolumnIndex !== undefined) {
       if (!gameBoard[selectedrowIndex][selectedcolumnIndex].readonly) {
@@ -89,6 +61,7 @@ function App() {
     }
   }
 
+  // Check if this cube's value is affected by the selected cube
   const isAffectedCube = (rowIndex: number, columnIndex: number): boolean => {
     if (selectedrowIndex === undefined || selectedcolumnIndex === undefined) {
       return false;
@@ -105,6 +78,7 @@ function App() {
     return false;
   }
 
+  // Add Classes to cubes
   const getClasses = (rowIndex: number, columnIndex: number): string => {
     const classes = ['cube', 'flex-container-column'];
 
@@ -132,6 +106,7 @@ function App() {
     return classes.join(' ');
   }
 
+  // Clear number from group
   const clearSelection = () => {
     if (selectedrowIndex === undefined || selectedcolumnIndex === undefined) {
       return;
