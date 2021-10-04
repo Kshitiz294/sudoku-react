@@ -24,7 +24,6 @@ function App() {
         }
       });
     });
-    console.log(buttons);
     setNumberButtons(buttons);
   }, [gameBoard]);
 
@@ -133,6 +132,18 @@ function App() {
     return classes.join(' ');
   }
 
+  const clearSelection = () => {
+    if (selectedrowIndex === undefined || selectedcolumnIndex === undefined) {
+      return;
+    }
+
+    if(!gameBoard[selectedrowIndex][selectedcolumnIndex].readonly) {
+      delete gameBoard[selectedrowIndex][selectedcolumnIndex].value;
+      const board = [...gameBoard];
+      setGameBoard(board);
+    } 
+  }
+
   return (
     <div className="App flex-container-column">
 
@@ -155,16 +166,19 @@ function App() {
       }
 
       {/* Buttons */} 
-      <div className="flex-container-row" style={{marginTop: '20px', width: '288px', justifyContent: 'space-between'}}>
-        {
-          numberButtons.map((num: NumberButton, index: number) => {
-            let styles = {};
-            if (num.occurance === 9) {
-              styles = { visibility: 'hidden' };
-            }
-            return <button key={index} style={styles} disabled={disableButtons} onClick={() => setNumberInCube(num.value)}>{num.value}</button>
-          })
-        }
+      <div className="flex-container-column">
+        <div className="flex-container-row" style={{marginTop: '20px', width: '288px', justifyContent: 'space-between'}}>
+          {
+            numberButtons.map((num: NumberButton, index: number) => {
+              let styles = {};
+              if (num.occurance === 9) {
+                styles = { visibility: 'hidden' };
+              }
+              return <button key={index} style={styles} disabled={disableButtons} onClick={() => setNumberInCube(num.value)}>{num.value}</button>
+            })
+          }
+        </div>
+        <button style={{marginTop: '20px'}} disabled={disableButtons} onClick={clearSelection}>Clear</button>
       </div>
     </div>
   );
