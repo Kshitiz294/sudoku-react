@@ -18,25 +18,30 @@ export function createSudoku(): Cube[][] {
     }
 
     // We have a solution, let's add it to the board
-    const board: Cube[][] = solution.map((row: number[]) => {
+    let board: Cube[][] = solution.map((row: number[]) => {
       return row.map((n: number) => {
         return { reality: n, readonly: false };
       });
     });
 
-    // let's show a few numbers (30 to be precise)
+    board = randomlyShowNumbersOnBoard(board);
+
+    return board;
+}
+
+function randomlyShowNumbersOnBoard(board: Cube[][]): Cube[][] {
     let count = 0;
-    while (count <= 30) {
-      const rowIndex = Math.floor(Math.random() * 8);
-      const columnIndex = Math.floor(Math.random() * 8);
-
-      if(!board[rowIndex][columnIndex].readonly) {
-        board[rowIndex][columnIndex].readonly = true;
-        board[rowIndex][columnIndex].value = board[rowIndex][columnIndex].reality;
-        count += 1;
-      }
+    for (let i = 0; i < 9; i++) {
+        for (let j = 0; j < 9; j++) {
+            const rand = Math.random();
+            if (rand > 0.5) {
+                board[i][j].readonly = true;
+                board[i][j].value = board[i][j].reality;
+                count += 1;
+            }
+        }
     }
-
+    console.log(count);
     return board;
 }
 
