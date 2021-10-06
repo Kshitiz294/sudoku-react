@@ -1,3 +1,5 @@
+import { Box, Button, Grid } from '@material-ui/core';
+import { Backspace } from '@material-ui/icons';
 import React, { useEffect, useState } from 'react';
 import './App.scss';
 import * as sudoku from './generator';
@@ -120,42 +122,54 @@ function App() {
   }
 
   return (
-    <div className="App flex-container-column">
-
-      {/* Game Board */}
-      {
-        gameBoard.map((row: Cube[], i: number) => {
-          return (
-            <div key={i} className="flex-container-row horizontal-row">
-              {
-                row.map((cube: Cube, j: number) => {
-                  const classes = getClasses(i, j);
-                  return (
-                    <div key={j} className={classes} onClick={() => selectCube(i, j)}>{cube.readonly ? cube.reality : cube.value}</div>
-                  );
-                })
-              }
-            </div>
-          );
-        })
-      }
-
-      {/* Buttons */} 
-      <div className="flex-container-column">
-        <div className="flex-container-row" style={{marginTop: '20px', width: '288px', justifyContent: 'space-between'}}>
+    <Box className="App" display="flex" flexDirection="column" justifyContent="center" alignItems="center">
+      <Grid container justifyContent="center" spacing={4} xs={12}>
+        {/* Game Board */}
+        <Grid item container style={{width: '402px'}} justifyContent="flex-end">
           {
-            numberButtons.map((num: NumberButton, index: number) => {
-              let styles = {};
-              if (num.occurance === 9) {
-                styles = { visibility: 'hidden' };
-              }
-              return <button key={index} style={styles} disabled={disableButtons} onClick={() => setNumberInCube(num.value)}>{num.value}</button>
+            gameBoard.map((row: Cube[], i: number) => {
+              return (
+                <div key={i} className="flex-container-row horizontal-row">
+                  {
+                    row.map((cube: Cube, j: number) => {
+                      const classes = getClasses(i, j);
+                      return (
+                        <div key={j} className={classes} onClick={() => selectCube(i, j)}>{cube.readonly ? cube.reality : cube.value}</div>
+                      );
+                    })
+                  }
+                </div>
+              );
             })
           }
-        </div>
-        <button style={{marginTop: '20px'}} disabled={disableButtons} onClick={clearSelection}>Clear</button>
-      </div>
-    </div>
+        </Grid>
+
+        {/* Buttons */} 
+        <Grid item container spacing={1} xs={2} style={{marginTop: '20px'}}>
+          {
+            numberButtons.map((num: NumberButton, index: number) => {
+              return (
+                <Grid item xs={4} key={index}>
+                  <Button variant="outlined" className="control-button" disabled={disableButtons || num.occurance === 9} onClick={() => setNumberInCube(num.value)}>{num.value}</Button>
+                </Grid>
+              )
+            })
+          }
+          
+          <Grid item justifyContent="center" xs={12}>
+            <Button variant="outlined" className="control-button" disabled={disableButtons} onClick={clearSelection}>
+              <Backspace/>
+            </Button>
+          </Grid>
+
+          {/* <Grid item justifyContent="center" xs={6}>
+            <Button variant="outlined" className="control-button" disabled={disableButtons} onClick={clearSelection}>
+              New Game
+            </Button>
+          </Grid> */}
+        </Grid>
+      </Grid>
+    </Box>
   );
 }
 
