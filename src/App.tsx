@@ -12,12 +12,18 @@ function App() {
   const [selectedrowIndex, setSelectedRowIndex] = useState<number | undefined>(undefined);
   const [selectedcolumnIndex, setSelectedColumnIndex] = useState<number | undefined>(undefined);
   const [disableButtons, setDisableButtons] = useState<boolean>(true);
+  const [newGame, setNewGame] = useState<boolean>(true);
   const [numberButtons, setNumberButtons] = useState<Array<NumberButton>>([]);
 
   // To Initialize the game
   useEffect(() => {
-    setGameBoard(sudoku.createSudoku()); 
-  }, []);
+    if (newGame) {
+      setGameBoard(sudoku.createSudoku());
+      
+      // To Trigger change in newGame
+      setNewGame(false);
+    }
+  }, [newGame]);
 
   // Initialize Number Buttons
   useEffect(() => {
@@ -130,6 +136,7 @@ function App() {
             <Typography variant="h6" component="div">
               React-Sudoku
             </Typography>
+            <Button style={{ position: 'absolute', right: '20px' }} color="inherit" onClick={() => setNewGame(true)}>New Game</Button>
           </Toolbar>
         </AppBar>
         <Grid container justifyContent="center" spacing={4} xs={12}>
