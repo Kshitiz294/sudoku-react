@@ -1,10 +1,11 @@
-import { Box, Button, Grid } from '@material-ui/core';
+import { AppBar, Box, Button, Grid, ThemeProvider, Toolbar, Typography } from '@material-ui/core';
 import { Backspace } from '@material-ui/icons';
 import React, { useEffect, useState } from 'react';
 import './App.scss';
 import * as sudoku from './generator';
 import { Cube } from './models/cube';
 import { NumberButton } from './models/number-button';
+import { theme } from './theme';
 
 function App() {
   const [gameBoard, setGameBoard] = useState<Array<Cube[]>>([]);
@@ -122,54 +123,63 @@ function App() {
   }
 
   return (
-    <Box className="App" display="flex" flexDirection="column" justifyContent="center" alignItems="center">
-      <Grid container justifyContent="center" spacing={4} xs={12}>
-        {/* Game Board */}
-        <Grid item container style={{width: '402px'}} justifyContent="flex-end">
-          {
-            gameBoard.map((row: Cube[], i: number) => {
-              return (
-                <div key={i} className="flex-container-row horizontal-row">
-                  {
-                    row.map((cube: Cube, j: number) => {
-                      const classes = getClasses(i, j);
-                      return (
-                        <div key={j} className={classes} onClick={() => selectCube(i, j)}>{cube.readonly ? cube.reality : cube.value}</div>
-                      );
-                    })
-                  }
-                </div>
-              );
-            })
-          }
-        </Grid>
-
-        {/* Buttons */} 
-        <Grid item container spacing={1} xs={2} style={{marginTop: '20px'}}>
-          {
-            numberButtons.map((num: NumberButton, index: number) => {
-              return (
-                <Grid item xs={4} key={index}>
-                  <Button variant="outlined" className="control-button" disabled={disableButtons || num.occurance === 9} onClick={() => setNumberInCube(num.value)}>{num.value}</Button>
-                </Grid>
-              )
-            })
-          }
-          
-          <Grid item justifyContent="center" xs={12}>
-            <Button variant="outlined" className="control-button" disabled={disableButtons} onClick={clearSelection}>
-              <Backspace/>
-            </Button>
+    <ThemeProvider theme={theme}>
+      <Box className="App" display="flex" flexDirection="column" justifyContent="center" alignItems="center">
+        <AppBar>
+          <Toolbar>
+            <Typography variant="h6" component="div">
+              React-Sudoku
+            </Typography>
+          </Toolbar>
+        </AppBar>
+        <Grid container justifyContent="center" spacing={4} xs={12}>
+          {/* Game Board */}
+          <Grid item container style={{width: '402px'}} justifyContent="flex-end">
+            {
+              gameBoard.map((row: Cube[], i: number) => {
+                return (
+                  <div key={i} className="flex-container-row horizontal-row">
+                    {
+                      row.map((cube: Cube, j: number) => {
+                        const classes = getClasses(i, j);
+                        return (
+                          <div key={j} className={classes} onClick={() => selectCube(i, j)}>{cube.readonly ? cube.reality : cube.value}</div>
+                        );
+                      })
+                    }
+                  </div>
+                );
+              })
+            }
           </Grid>
 
-          {/* <Grid item justifyContent="center" xs={6}>
-            <Button variant="outlined" className="control-button" disabled={disableButtons} onClick={clearSelection}>
-              New Game
-            </Button>
-          </Grid> */}
+          {/* Buttons */} 
+          <Grid item container spacing={1} xs={2} style={{marginTop: '20px'}}>
+            {
+              numberButtons.map((num: NumberButton, index: number) => {
+                return (
+                  <Grid item xs={4} key={index}>
+                    <Button variant="outlined" className="control-button" disabled={disableButtons || num.occurance === 9} onClick={() => setNumberInCube(num.value)}>{num.value}</Button>
+                  </Grid>
+                )
+              })
+            }
+            
+            <Grid item justifyContent="center" xs={12}>
+              <Button variant="outlined" className="control-button" disabled={disableButtons} onClick={clearSelection}>
+                <Backspace/>
+              </Button>
+            </Grid>
+
+            {/* <Grid item justifyContent="center" xs={6}>
+              <Button variant="outlined" className="control-button" disabled={disableButtons} onClick={clearSelection}>
+                New Game
+              </Button>
+            </Grid> */}
+          </Grid>
         </Grid>
-      </Grid>
-    </Box>
+      </Box>
+    </ThemeProvider>
   );
 }
 
