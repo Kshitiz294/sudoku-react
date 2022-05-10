@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import './App.scss';
 import * as sudoku from './generator';
 import { Cube } from './models/cube';
+import { GameMessage } from './models/game-messages';
 import { NumberButton } from './models/number-button';
 import { theme } from './theme';
 
@@ -14,6 +15,8 @@ function App() {
   const [disableButtons, setDisableButtons] = useState<boolean>(true);
   const [newGame, setNewGame] = useState<boolean>(true);
   const [numberButtons, setNumberButtons] = useState<Array<NumberButton>>([]);
+  const [mistakes, setMistakes] = useState<number>(0);
+  const [gameResult, setGameResult] = useState<GameMessage | undefined>(undefined);
 
   // To Initialize the game
   useEffect(() => {
@@ -22,6 +25,10 @@ function App() {
       
       // To Trigger change in newGame
       setNewGame(false);
+
+      // Reset game result
+      setMistakes(0);
+      setGameResult(undefined);
     }
   }, [newGame]);
 
@@ -42,16 +49,35 @@ function App() {
     setNumberButtons(buttons);
   }, [gameBoard]);
 
+  // Check Game Result
+  useEffect(() => {
+    if (mistakes === 3) {
+      setGameResult(GameMessage.LOSE);
+      return;
+    }
+
+    for (const button of numberButtons) {
+      if (button.occurance < 9) {
+        setGameResult(undefined);
+        return;
+      }
+    }
+
+    setGameResult(GameMessage.Win);
+  }, [gameBoard, numberButtons]);
+
   // Disable/Enable Number buttons
   useEffect(() => {
-    if (selectedrowIndex === undefined || selectedcolumnIndex === undefined) {
+    if (gameResult !== undefined) {
+      setDisableButtons(true);
+    } else if (selectedrowIndex === undefined || selectedcolumnIndex === undefined) {
       setDisableButtons(true);
     } else if (gameBoard[selectedrowIndex][selectedcolumnIndex].readonly) {
       setDisableButtons(true);
     } else {
       setDisableButtons(false);
     }
-  }, [selectedrowIndex, selectedcolumnIndex, gameBoard])
+  }, [selectedrowIndex, selectedcolumnIndex, gameBoard, gameResult])
 
   // Select a cube
   const selectCube = (rowIndex: number, columnIndex: number): void => {
@@ -66,6 +92,11 @@ function App() {
         gameBoard[selectedrowIndex][selectedcolumnIndex].value = n;
         const board = [...gameBoard];
         setGameBoard(board);
+
+        // Check for mistakes
+        if(gameBoard[selectedrowIndex][selectedcolumnIndex].value !== gameBoard[selectedrowIndex][selectedcolumnIndex].reality) {
+          setMistakes(mistakes + 1);
+        }
       }
     }
   }
@@ -136,9 +167,17 @@ function App() {
             <Typography variant="h6" component="div">
               React-Sudoku
             </Typography>
+            <Typography variant="h6" component="div" style={{ position: 'absolute', right: '50%' }}>
+              Mistakes: {mistakes}/3
+            </Typography>
             <Button style={{ position: 'absolute', right: '20px' }} color="inherit" onClick={() => setNewGame(true)}>New Game</Button>
           </Toolbar>
         </AppBar>
+        <Grid item justifyContent="center" spacing={4} xs={12}>
+          <Typography variant="h6" component="div">
+            {gameResult}
+          </Typography>
+        </Grid>
         <Grid container justifyContent="center" spacing={4} xs={12}>
           {/* Game Board */}
           <Grid item container style={{width: '402px'}} justifyContent="flex-end">
